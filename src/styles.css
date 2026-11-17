@@ -1,0 +1,158 @@
+/* 색 역할은 .dah/디자인_컨셉안.md 6장을 따른다. */
+:root {
+  --ink: #090a0f;
+  --indigo: #242238;
+  --cyan: #8bd9e2;
+  --purple: #a879d6;
+  --red: #bd646b;
+  --paper: #d8cfb8;
+
+  color: #e6e6ea;
+  background: var(--ink);
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  display: grid;
+  grid-template:
+    'hud hud hud' auto
+    'rules scene docs' 1fr
+    'dialogue dialogue dialogue' auto / 260px 1fr 300px;
+  gap: 8px;
+  height: 100vh;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.hud {
+  grid-area: hud;
+  display: flex;
+  gap: 24px;
+}
+.time {
+  color: var(--cyan);
+}
+
+.panel {
+  background: var(--indigo);
+  padding: 12px;
+  overflow: auto;
+}
+.panel h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--purple);
+}
+.rules {
+  grid-area: rules;
+}
+.docs {
+  grid-area: docs;
+}
+.dialogue {
+  grid-area: dialogue;
+}
+
+.rule,
+.doc {
+  margin-bottom: 8px;
+  padding: 8px;
+}
+.rule p,
+.doc p {
+  margin: 4px 0 0;
+}
+.rule-official {
+  background: #f4f1ea;
+  color: var(--ink);
+}
+.rule-staff {
+  background: var(--paper);
+  color: var(--ink);
+  font-style: italic;
+}
+.rule-unknown {
+  background: var(--paper);
+  color: var(--ink);
+  opacity: 0.7;
+}
+.doc {
+  background: var(--ink);
+}
+
+.scene {
+  grid-area: scene;
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 8px;
+  align-items: start;
+}
+.zone-view {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--ink);
+  border: 1px solid var(--indigo);
+}
+.cam-label {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-family: monospace;
+}
+.layer {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  padding: 4px 8px;
+  border: 1px dashed #666;
+  font-size: 12px;
+}
+
+.store-map rect {
+  fill: var(--indigo);
+  stroke: #444;
+  stroke-width: 0.5;
+}
+.store-map g {
+  cursor: pointer;
+}
+.store-map .selected rect {
+  stroke: var(--cyan);
+  stroke-width: 1.5;
+}
+.store-map text {
+  fill: currentColor;
+  font-size: 4px;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.wrong {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--red);
+}
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.choices button {
+  background: var(--ink);
+  color: inherit;
+  border: 1px solid #444;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.choices button:hover:not(:disabled) {
+  border-color: var(--cyan);
+}
+.choices button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
