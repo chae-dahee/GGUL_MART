@@ -16,102 +16,491 @@ body {
   margin: 0;
 }
 
-.app {
-  display: grid;
-  grid-template:
-    'hud hud hud' auto
-    'rules scene docs' 1fr
-    'dialogue dialogue dialogue' auto / 260px 1fr 300px;
-  gap: 8px;
-  height: 100vh;
-  padding: 8px;
-  box-sizing: border-box;
+/* 매장 장면이 화면 전체를 차지하고 UI는 그 위에 겹친다. */
+.game {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--ink);
+}
+button {
+  font: inherit;
+}
+kbd {
+  font: 11px ui-monospace, monospace;
+  opacity: 0.6;
 }
 
-.hud {
-  grid-area: hud;
+.screen {
   display: flex;
-  gap: 24px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 100vh;
 }
-.time {
+.screen h1 {
+  margin: 0;
   color: var(--cyan);
+}
+.screen button {
+  padding: 10px 24px;
+  background: var(--ink);
+  color: inherit;
+  border: 1px solid var(--cyan);
+  cursor: pointer;
+}
+/* tools/art/lobby.py가 렌더한 저해상도 이미지를 픽셀이 보이게 키운다. */
+.lobby {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--ink) url('/art/lobby.png') center / cover no-repeat;
+  image-rendering: pixelated;
+}
+.lobby-vignette {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #090a0fee 0, #090a0faa 40%, transparent 70%);
+}
+.lobby-content {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 420px;
+}
+.lobby-content h1 {
+  margin: 0;
+  font-size: 56px;
+  letter-spacing: -0.04em;
+}
+.lobby-sub {
+  margin: -12px 0 0;
+  opacity: 0.75;
+}
+.lobby-start {
+  align-self: flex-start;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 24px;
+  background: var(--ink);
+  color: inherit;
+  font-size: 16px;
+  border: 1px solid var(--cyan);
+  cursor: pointer;
+}
+.lobby-start:hover {
+  background: #8bd9e214;
+}
+.lobby-start kbd {
+  font: 12px ui-monospace, monospace;
+  opacity: 0.6;
+}
+
+.idle {
+  opacity: 0.6;
 }
 
 .panel {
-  background: var(--indigo);
+  background: #12141dd9;
+  border: 1px solid #292b38;
   padding: 12px;
-  overflow: auto;
+}
+
+.hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 10px 16px;
+  background: linear-gradient(#090a0fee, #090a0f00);
+}
+.hud button {
+  padding: 4px 10px;
+  background: #090a0fcc;
+  color: inherit;
+  border: 1px solid #444;
+  cursor: pointer;
+}
+.hud button:hover {
+  border-color: var(--cyan);
+}
+.cam {
+  font-family: ui-monospace, monospace;
+}
+.clock {
+  font: 600 22px/1 ui-monospace, monospace;
+}
+.zone {
+  color: var(--cyan);
+}
+.sanity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.bar {
+  display: flex;
+  gap: 3px;
+}
+.bar i {
+  width: 14px;
+  height: 10px;
+  background: currentColor;
+}
+.bar i.off {
+  background: var(--ink);
 }
 .panel h2 {
   margin: 0 0 8px;
   font-size: 14px;
   color: var(--purple);
 }
-.rules {
-  grid-area: rules;
+.tasks {
+  position: absolute;
+  top: 56px;
+  left: 12px;
+  z-index: 15;
+  width: 250px;
+  font-size: 13px;
 }
-.docs {
-  grid-area: docs;
+.task {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--ink);
+  opacity: 0.6;
 }
-.dialogue {
-  grid-area: dialogue;
+.task.open {
+  opacity: 1;
 }
-
-.rule,
-.doc {
-  margin-bottom: 8px;
-  padding: 8px;
+.task.done {
+  text-decoration: line-through;
 }
-.rule p,
-.doc p {
-  margin: 4px 0 0;
+.task .box {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin-top: 3px;
+  border: 1px solid currentColor;
+  font-size: 10px;
+  line-height: 14px;
+  text-align: center;
 }
-.rule-official {
-  background: #f4f1ea;
-  color: var(--ink);
+.task.open .box {
+  border-color: var(--cyan);
 }
-.rule-staff {
-  background: var(--paper);
-  color: var(--ink);
-  font-style: italic;
+.task-body {
+  flex: 1;
 }
-.rule-unknown {
-  background: var(--paper);
-  color: var(--ink);
+.task-body small {
+  display: block;
+  opacity: 0.6;
+}
+.task button {
+  padding: 2px 10px;
+  background: var(--ink);
+  color: inherit;
+  border: 1px solid var(--cyan);
+  cursor: pointer;
+}
+.task button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  background: #090a0fb0;
+}
+.modal {
+  width: min(760px, 92vw);
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  background: #12141d;
+  border: 1px solid #292b38;
+}
+.modal header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid #292b38;
+}
+.modal h2 {
+  margin: 0;
+  font-size: 15px;
+  color: var(--purple);
+}
+.modal h3 {
+  margin: 8px 0 0;
+  font-size: 13px;
   opacity: 0.7;
 }
-.doc {
+.modal header button,
+.accuse {
+  padding: 4px 12px;
   background: var(--ink);
+  color: inherit;
+  border: 1px solid #444;
+  cursor: pointer;
 }
-
-.scene {
-  grid-area: scene;
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  overflow: auto;
+}
+.notes {
   display: grid;
-  grid-template-columns: 1fr 200px;
-  gap: 8px;
-  align-items: start;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
-.zone-view {
-  position: relative;
-  aspect-ratio: 16 / 9;
+.notes small {
+  display: block;
+  margin-bottom: 4px;
+  opacity: 0.6;
+}
+/* 바꿔치기한 페이지는 인쇄가 어긋나 보인다. 글은 읽힌다. */
+.doc-manual .misprint {
+  transform: translateX(3px) rotate(-0.4deg);
+  letter-spacing: 0.04em;
+  color: #2a2830;
+}
+.hint {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.7;
+}
+.message {
+  margin: 0 0 8px;
+  color: var(--purple);
+}
+.evidence-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.evidence {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 8px;
+  padding: 8px;
   background: var(--ink);
-  border: 1px solid var(--indigo);
+  border: 1px solid #292b38;
+  cursor: pointer;
+  font-size: 13px;
 }
-.cam-label {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  font-family: monospace;
+.evidence input {
+  grid-row: span 2;
+  accent-color: var(--purple);
 }
-.layer {
-  position: absolute;
-  bottom: 8px;
-  left: 8px;
-  padding: 4px 8px;
-  border: 1px dashed #666;
-  font-size: 12px;
+.evidence small {
+  opacity: 0.6;
+}
+.evidence.picked {
+  border-color: var(--purple);
+}
+.accuse:not(:disabled) {
+  border-color: var(--purple);
+}
+.accuse:disabled {
+  opacity: 0.4;
 }
 
+/* 출처별 재질은 .dah/디자인_컨셉안.md 5장을 따른다. 글꼴은 라이선스 확인 전이라 시스템 글꼴을 쓴다. */
+.doc-manual {
+  padding: 12px 14px;
+  background: #f1eee6;
+  color: var(--ink);
+}
+.doc-manual h4 {
+  margin: 0 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--ink);
+}
+.doc-manual ol {
+  margin: 0;
+  padding-left: 18px;
+}
+.doc-memo {
+  padding: 12px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 17px/1.35 cursive;
+  transform: rotate(-1.2deg);
+}
+.doc-memo small {
+  font: 11px system-ui, sans-serif;
+}
+/* 종이만 바래게 하고 문장은 흐리지 않는다. */
+.doc-receipt {
+  padding: 12px;
+  background: #cfc9bb;
+  background-image: repeating-linear-gradient(0deg, #ffffff22 0 1px, transparent 1px 3px);
+  color: var(--ink);
+  font-weight: 700;
+  transform: rotate(0.8deg);
+}
+.doc-cctv {
+  margin: 0;
+}
+.doc-cctv .video {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  aspect-ratio: 16 / 9;
+  padding: 6px 8px;
+  overflow: hidden;
+  background: #1c2226;
+}
+/* 노이즈는 영상에만 넣고 타임스탬프는 선명하게 둔다(디자인 컨셉안 5절). */
+.doc-cctv .video img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  filter: grayscale(0.7) contrast(1.1) brightness(0.85);
+}
+.doc-cctv .video::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, #0005 0 1px, transparent 1px 3px);
+}
+.doc-cctv .video span {
+  position: relative;
+  z-index: 1;
+  padding: 1px 5px;
+  background: #000a;
+  font: 600 12px ui-monospace, monospace;
+}
+.doc-cctv figcaption {
+  margin-top: 4px;
+}
+.doc-pos {
+  padding: 10px 12px;
+  background: var(--ink);
+  font: 12px/1.7 ui-monospace, monospace;
+}
+.doc-pos .row {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+}
+.doc-pos .head {
+  opacity: 0.6;
+  border-bottom: 1px dashed #444;
+}
+
+.zone-view {
+  position: absolute;
+  inset: 0;
+}
+.zone-scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.zone-scene image {
+  image-rendering: pixelated;
+}
+.hotspot {
+  fill: transparent;
+  cursor: pointer;
+}
+.hotspot:hover {
+  fill: #8bd9e214;
+  stroke: var(--cyan);
+  stroke-width: 1.5;
+}
+/* 위치는 임시다. 미니맵이 덮는 모서리에는 이상 레이어를 두지 않는다. */
+.store-map {
+  position: absolute;
+  top: 56px;
+  right: 12px;
+  z-index: 15;
+  width: 220px;
+  background: #090a0fcc;
+}
+.store-map .waiting {
+  fill: var(--cyan);
+}
+
+/* 정신도 연출: 주변부만 어두워지고 색이 빠진다. */
+.fx-edge {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 50%, #090a0f 100%);
+  opacity: calc(0.35 + var(--unrest) * 0.65);
+  backdrop-filter: saturate(calc(1 - var(--unrest) * 0.8));
+  mask-image: radial-gradient(ellipse at center, transparent 45%, black 90%);
+}
+.unstable .fx-edge {
+  animation: flicker 6s steps(1) infinite;
+}
+@keyframes flicker {
+  0%,
+  100% {
+    filter: none;
+  }
+  41% {
+    filter: brightness(0.4);
+  }
+  43% {
+    filter: none;
+  }
+  77% {
+    filter: brightness(0.6);
+  }
+  78% {
+    filter: none;
+  }
+}
+/* 오답 즉시 반응: 국소적인 붉은 조명과 깜빡임(디자인 컨셉안 3절). */
+.fx-red {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 60% 80%, #bd646b88, transparent 60%);
+  animation: red-flash 1.6s ease-out forwards;
+}
+@keyframes red-flash {
+  0% {
+    opacity: 1;
+  }
+  15% {
+    opacity: 0.2;
+  }
+  25% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
+}
 .store-map rect {
   fill: var(--indigo);
   stroke: #444;
@@ -131,23 +520,111 @@ body {
   dominant-baseline: middle;
 }
 
-.wrong {
-  grid-column: 1 / -1;
+.dialogue {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 20;
+  transform: translateX(-50%);
+  width: min(1100px, 94vw);
+  display: flex;
+  gap: 20px;
+  padding: 14px 18px;
+  background: #090a0fdd;
+  border: 1px solid #292b38;
+}
+.dialogue-text {
+  flex: 1;
+}
+.dialogue .choices {
+  width: 380px;
+  max-height: 34vh;
+}
+.next {
+  padding: 2px 10px;
+  background: none;
+  color: inherit;
+  border: 1px solid #444;
+  cursor: pointer;
+}
+.notice {
   margin: 0;
-  color: var(--red);
+  color: var(--cyan);
+}
+.ending {
+  max-width: 560px;
+  text-align: center;
+}
+.stats {
+  padding: 0;
+  list-style: none;
+  text-align: center;
+  opacity: 0.8;
+}
+.speaker {
+  font-size: 12px;
+  opacity: 0.6;
+}
+.line {
+  margin: 4px 0 8px;
+  font-size: 18px;
+}
+.reply {
+  margin: 4px 0;
+}
+/* 구역을 옮길 때 카메라가 바뀌는 느낌을 준다. 같은 구역 안의 이상 변화는 조용히 바뀌어야 하므로 구역 단위로만 쓴다. */
+.zone-scene {
+  animation: cut-in 0.35s ease-out;
+}
+@keyframes cut-in {
+  from {
+    opacity: 0;
+    filter: brightness(2);
+  }
+}
+.person {
+  animation: arrive 0.8s ease-out;
+}
+@keyframes arrive {
+  from {
+    opacity: 0;
+  }
+}
+.hover-label {
+  position: absolute;
+  left: 50%;
+  top: 64px;
+  z-index: 18;
+  transform: translateX(-50%);
+  padding: 4px 12px;
+  background: #090a0fcc;
+  border: 1px solid var(--cyan);
+  pointer-events: none;
+  font-size: 13px;
+}
+.dialogue .message {
+  animation: arrive 0.4s ease-out;
 }
 
 .choices {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
+  overflow: auto;
 }
 .choices button {
+  display: flex;
+  gap: 10px;
   background: var(--ink);
   color: inherit;
   border: 1px solid #444;
   padding: 8px 12px;
+  text-align: left;
   cursor: pointer;
+}
+.choices kbd {
+  font: 12px ui-monospace, monospace;
+  opacity: 0.6;
 }
 .choices button:hover:not(:disabled) {
   border-color: var(--cyan);
