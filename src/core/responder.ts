@@ -1,16 +1,21 @@
-import type { Entity, Question } from './types';
+import type { Encounter, Question } from './types';
 
 const yesNo = (value: boolean) => (value ? '예' : '아니오');
 
-export function respond(entity: Entity, question: Question): string {
+function answer(question: Question, lie: boolean): string {
+  if ('lie' in question) return lie ? question.lie : question.truth;
+  return yesNo(question.truth !== lie);
+}
+
+export function respond(entity: Encounter, question: Question): string {
   switch (entity.response) {
     case 'truthful':
-      return yesNo(question.truth);
+      return answer(question, false);
     case 'liar':
-      return yesNo(!question.truth);
+      return answer(question, true);
     case 'fakeStaff':
-      return yesNo(question.aboutJob ? !question.truth : question.truth);
+      return answer(question, !!question.aboutJob);
     case 'repeater':
-      return entity.repeatLine;
+      return entity.repeatLine ?? '';
   }
 }
